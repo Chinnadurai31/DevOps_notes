@@ -1,0 +1,13 @@
+fail2ban 
+
+#after installing 
+touch /etc/fail2ban/jail.local
+#=============
+[sshd]
+enabled = true
+port = ssh
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 8600 
+ignoreip = 127.0.0.1

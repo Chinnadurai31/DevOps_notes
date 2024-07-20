@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlit-app
+  labels:
+    app: streamlit-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streamlit-app
+  template:
+    metadata:
+      labels:
+        app: streamlit-app
+    spec:
+      containers:
+      - name: streamlit-app
+        image: chinnadurai123/project:k8s
+        ports:
+        - containerPort: 8501
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secrets
+              key: postgres-username
+        - name: POSTGRES_PASSWORD
+          valueFrom: 
+            secretKeyRef:
+              name: postgres-secrets
+              key: postgres-password
+        - name: POSTGRES_DB
+          valueFrom: 
+            secretKeyRef:
+              name: postgres-secrets
+              key: postgres-dbname
+        - name: DB_PORT
+          value: "5432"
+
+        - name: DATABASE_URL
+          value: "postgres-service"  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app
+spec:
+  type: NodePort
+  ports:
+  - port: 8501   
+    targetPort: 8501  
+    nodePort: 30000  
+  selector:
+    app: streamlit-app
